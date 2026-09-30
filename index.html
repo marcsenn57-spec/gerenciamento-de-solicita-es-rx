@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro de Exames Radiológicos</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Tools -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+            body {
+                background: white !important;
+                color: black !important;
+            }
+            .print-container {
+                box-shadow: none !important;
+                border: none !important;
+                padding: 0 !important;
+                width: 100% !important;
+            }
+            .main-grid {
+                display: block !important;
+            }
+            /* When print mode is active for selected items, hide rows that are not selected */
+            body.print-only-selected tr.patient-row:not(.is-selected-for-print) {
+                display: none !important;
+            }
+            /* Clean up table header and cells for printing */
+            th, td {
+                color: #000 !important;
+                border-bottom: 1px solid #ccc !important;
+            }
+            .print-badge {
+                border: 1px solid #999 !important;
+                background: transparent !important;
+                color: #000 !important;
+            }
+        }
+    </style>
+</head>
+<body class="bg-sky-300 min-h-screen text-slate-800 font-sans pb-12">
+
+    <div class="max-w-[1400px] mx-auto px-4 py-6">
+        
+        <!-- Header -->
+        <header class="bg-white rounded-xl shadow-md p-6 mb-6 border-l-4 border-sky-500 flex flex-col md:flex-row justify-between items-center gap-4 border-t border-r border-b border-sky-100">
+            <div>
+                <h1 class="text-2xl md:text-3xl font-bold text-sky-950 flex items-center gap-3">
+                    <i class="fa-solid fa-tooth text-sky-500"></i>
+                    Cadastro para Exames Radiológicos
+                </h1>
+                <p class="text-xs text-sky-700 mt-1">Gerenciamento de solicitações radiológicas</p>
+            </div>
+            
+            <!-- Imprimir do Header (Geral) -->
+            <div class="no-print flex flex-wrap items-center gap-2">
+                <button onclick="printList(false)" class="bg-sky-600 hover:bg-sky-700 text-white font-medium px-4 py-2.5 rounded-lg transition-colors flex items-center gap-2 shadow-sm text-sm">
+                    <i class="fa-solid fa-print"></i>
+                    Imprimir Lista Geral
+                </button>
+                <button onclick="printList(true)" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-4 py-2.5 rounded-lg transition-colors flex items-center gap-2 shadow-sm text-sm">
+                    <i class="fa-solid fa-check-square"></i>
+                    Imprimir Selecionados
+                </button>
+            </div>
+        </header>
+
+        <!-- Grid Principal -->
+        <div class="main-grid grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+            
+            <!-- Coluna Esquerda: Formulário -->
+            <section class="no-print lg:col-span-4 bg-white rounded-xl shadow-md p-6 lg:sticky lg:top-6 border border-sky-100">
+                <h2 class="text-lg font-semibold text-sky-900 mb-4 pb-2 border-b border-sky-100 flex items-center gap-2">
+                    <i class="fa-solid fa-user-plus text-sky-500"></i>
+                    Dados do Paciente
+                </h2>
+                
+                <form id="patientForm" class="flex flex-col gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-sky-800 uppercase mb-1">Nome do Paciente *</label>
+                        <input type="text" id="patientName" required placeholder="Digite o nome completo" 
+                            class="w-full px-3 py-2 bg-sky-50/50 border border-sky-200 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none text-sm text-slate-800 placeholder-slate-400 transition">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-sky-800 uppercase mb-1">CPF *</label>
+                        <input type="text" id="patientCpf" required placeholder="000.000.000-00" maxlength="14"
+                            class="w-full px-3 py-2 bg-sky-50/50 border border-sky-200 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none text-sm text-slate-800 placeholder-slate-400 transition">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-sky-800 uppercase mb-1">Data de Nascimento *</label>
+                        <input type="date" id="birthDate" required 
+                            class="w-full px-3 py-2 bg-sky-50/50 border border-sky-200 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none text-sm text-slate-800 transition">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-sky-800 uppercase mb-1">Tipo de RX *</label>
+                        <select id="rxType" required class="w-full px-3 py-2 bg-sky-50/50 border border-sky-200 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none text-sm text-slate-800 transition">
+                            <option value="" class="text-slate-500">Selecione...</option>
+                            <option value="Periapical">Periapical</option>
+                            <option value="Panorâmica">Panorâmica</option>
+                            <option value="Oclusal">Oclusal</option>
+                            <option value="Interproximal (Bitewing)">Interproximal (Bitewing)</option>
+                            <option value="Telerradiografia">Telerradiografia</option>
+                            <option value="Tomografia Computadorizada">Tomografia Computadorizada</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-sky-800 uppercase mb-1">Unidades Dentárias</label>
+                        <input type="text" id="dentalUnits" placeholder="Ex: 11, 21, 36 ou Geral" 
+                            class="w-full px-3 py-2 bg-sky-50/50 border border-sky-200 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none text-sm text-slate-800 placeholder-slate-400 transition">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-sky-800 uppercase mb-1">Agente de Saúde / Responsável</label>
+                        <input type="text" id="healthAgent" placeholder="Nome do agente ou dentista" 
+                            class="w-full px-3 py-2 bg-sky-50/50 border border-sky-200 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none text-sm text-slate-800 placeholder-slate-400 transition">
+                    </div>
+
+                    <div class="pt-2">
+                        <button type="submit" id="saveBtn" class="w-full bg-sky-600 hover:bg-sky-700 text-white font-medium py-2.5 rounded-lg shadow-md hover:shadow-lg transition flex items-center justify-center gap-2">
+                            <span>Salvar Paciente</span>
+                        </button>
+                    </div>
+                </form>
+            </section>
+
+            <!-- Coluna Direita: Lista de Pacientes -->
+            <section class="lg:col-span-8 bg-white rounded-xl shadow-md p-6 print-container border border-sky-100">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4 pb-3 border-b border-sky-100">
+                    <div>
+                        <h2 class="text-lg font-semibold text-sky-900 flex items-center gap-2">
+                            <i class="fa-solid fa-list-check text-sky-500"></i>
+                            Lista de Pacientes
+                        </h2>
+                        <span id="selectedCountBadge" class="no-print text-xs text-sky-700 font-medium">0 selecionados</span>
+                    </div>
+                    
+                    <div class="no-print flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto">
+                        <div class="relative w-full sm:w-64">
+                            <input type="text" id="searchInput" placeholder="Buscar por nome, CPF ou RX..." 
+                                class="w-full pl-9 pr-4 py-2 bg-sky-50/50 border border-sky-200 rounded-lg focus:ring-2 focus:ring-sky-500 outline-none text-sm text-slate-800 placeholder-slate-400 transition">
+                            <i class="fa-solid fa-search absolute left-3 top-2.5 text-sky-400 text-sm"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Barra com botões de Ações Rápidas no topo da tabela -->
+                <div class="no-print flex flex-wrap items-center justify-between gap-2 mb-4 bg-sky-50/60 p-2.5 rounded-lg border border-sky-100 text-xs">
+                    <div class="flex items-center gap-3">
+                        <label class="inline-flex items-center gap-2 cursor-pointer text-sky-900 font-medium">
+                            <input type="checkbox" id="selectAllCheckbox" onchange="toggleSelectAll(this)" class="w-4 h-4 rounded text-sky-600 focus:ring-sky-500 border-sky-300">
+                            Selecionar Todos na Tela
+                        </label>
+                    </div>
+                    
+                    <div class="flex items-center gap-2">
+                        <button onclick="printList(false)" class="text-sky-700 hover:text-sky-900 bg-white hover:bg-sky-100 border border-sky-200 px-3 py-1.5 rounded-md font-medium transition flex items-center gap-1.5">
+                            <i class="fa-solid fa-print"></i> Imprimir Geral
+                        </button>
+                        <button onclick="printList(true)" class="text-indigo-700 hover:text-indigo-900 bg-white hover:bg-indigo-50 border border-indigo-200 px-3 py-1.5 rounded-md font-medium transition flex items-center gap-1.5">
+                            <i class="fa-solid fa-check-square"></i> Imprimir Selecionados
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Tabela de Pacientes -->
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-sky-50/80 border-b border-sky-100 text-sky-800 text-xs uppercase tracking-wider">
+                                <th class="p-3 no-print w-10 text-center">
+                                    <span class="sr-only">Seleção</span>
+                                </th>
+                                <th class="p-3">Paciente</th>
+                                <th class="p-3">CPF</th>
+                                <th class="p-3">Nascimento</th>
+                                <th class="p-3">Tipo de RX</th>
+                                <th class="p-3">Unidades</th>
+                                <th class="p-3">Agente de Saúde</th>
+                                <th class="p-3 no-print text-center">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="patientTableBody" class="divide-y divide-sky-100 text-sm">
+                        </tbody>
+                    </table>
+
+                    <div id="emptyState" class="py-12 text-center text-slate-400">
+                        <i class="fa-solid fa-spinner fa-spin text-3xl mb-2 text-sky-500"></i>
+                        <p class="text-sm">Carregando registros do Firebase...</p>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </div>
+
+    <!-- Custom Modal Alert / Confirmation -->
+    <div id="customModal" class="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center hidden no-print">
+        <div class="bg-white rounded-xl shadow-xl max-w-md w-full p-6 border border-sky-100 m-4 animate-fade-in">
+            <div class="flex items-center gap-3 mb-4">
+                <div id="modalIconContainer" class="w-10 h-10 rounded-full bg-sky-100 text-sky-600 flex items-center justify-center shrink-0">
+                    <i id="modalIcon" class="fa-solid fa-circle-info text-lg"></i>
+                </div>
+                <h3 id="modalTitle" class="text-lg font-bold text-sky-950">Aviso</h3>
+            </div>
+            <p id="modalMessage" class="text-sm text-slate-600 mb-6">Mensagem do sistema.</p>
+            <div class="flex justify-end gap-3" id="modalActions">
+                <button onclick="closeModal()" class="bg-sky-600 hover:bg-sky-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition">Entendido</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Módulo Firebase v11 -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+        import { 
+            getFirestore, 
+            collection, 
+            addDoc, 
+            deleteDoc, 
+            doc, 
+            onSnapshot, 
+            query, 
+            orderBy 
+        } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+
+        // Configuração do Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyAX0mgeHrR4Flzd3mYxZz1_pYs6akmbOXk",
+            authDomain: "agenda-raiox-a5695.firebaseapp.com",
+            databaseURL: "https://agenda-raiox-a5695-default-rtdb.firebaseio.com",
+            projectId: "agenda-raiox-a5695",
+            storageBucket: "agenda-raiox-a5695.firebasestorage.app",
+            messagingSenderId: "153352250932",
+            appId: "1:153352250932:web:8e3b1a68e0b449f2ebcc61",
+            measurementId: "G-RPNLBDDENZ"
+        };
+
+        // Inicialização
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const patientsCollection = collection(db, "pacientes");
+
+        let allPatients = [];
+        let selectedPatientIds = new Set();
+        let patientToDeleteId = null;
+
+        // Elementos DOM
+        const patientForm = document.getElementById('patientForm');
+        const patientTableBody = document.getElementById('patientTableBody');
+        const emptyState = document.getElementById('emptyState');
+        const searchInput = document.getElementById('searchInput');
+        const patientCpfInput = document.getElementById('patientCpf');
+        const selectAllCheckbox = document.getElementById('selectAllCheckbox');
+        const selectedCountBadge = document.getElementById('selectedCountBadge');
+
+        // Máscara de CPF
+        patientCpfInput.addEventListener('input', (e) => {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length > 11) value = value.slice(0, 11);
+            value = value.replace(/(\d{3})(\d)/, '$1.$2');
+            value = value.replace(/(\d{3})(\d)/, '$1.$2');
+            value = value.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+            e.target.value = value;
+        });
+
+        // Formatar Data
+        function formatDate(dateString) {
+            if (!dateString) return '-';
+            const parts = dateString.split('-');
+            if (parts.length === 3) {
+                return `${parts[2]}/${parts[1]}/${parts[0]}`;
+            }
+            return dateString;
+        }
+
+        // Modais Customizados
+        window.showAlert = function(title, message, iconClass = "fa-circle-info", iconBg = "bg-sky-100 text-sky-600") {
+            const modal = document.getElementById('customModal');
+            document.getElementById('modalTitle').innerText = title;
+            document.getElementById('modalMessage').innerText = message;
+            
+            const iconContainer = document.getElementById('modalIconContainer');
+            iconContainer.className = `w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${iconBg}`;
+            document.getElementById('modalIcon').className = `fa-solid ${iconClass} text-lg`;
+
+            document.getElementById('modalActions').innerHTML = `
+                <button onclick="closeModal()" class="bg-sky-600 hover:bg-sky-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition">Entendido</button>
+            `;
+            modal.classList.remove('hidden');
+        };
+
+        window.closeModal = function() {
+            document.getElementById('customModal').classList.add('hidden');
+            patientToDeleteId = null;
+        };
+
+        // Escutar do banco Firestore em tempo real
+        const q = query(patientsCollection, orderBy("createdAt", "desc"));
+        onSnapshot(q, (snapshot) => {
+            allPatients = [];
+            snapshot.forEach((docSnap) => {
+                allPatients.push({
+                    id: docSnap.id,
+                    ...docSnap.data()
+                });
+            });
+            renderTable(getFilteredPatients());
+        }, (error) => {
+            console.error("Erro ao escutar banco de dados:", error);
+            emptyState.innerHTML = `<p class="text-red-500 text-sm p-4">Erro ao conectar com o Firebase: ${error.message}</p>`;
+        });
+
+        // Salvar Paciente
+        patientForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const saveBtn = document.getElementById('saveBtn');
+            saveBtn.disabled = true;
+            saveBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i><span>Salvando...</span>';
+
+            const newPatient = {
+                name: document.getElementById('patientName').value.trim(),
+                cpf: document.getElementById('patientCpf').value.trim(),
+                birthDate: document.getElementById('birthDate').value,
+                rxType: document.getElementById('rxType').value,
+                dentalUnits: document.getElementById('dentalUnits').value.trim() || 'Não especificado',
+                healthAgent: document.getElementById('healthAgent').value.trim() || 'Não informado',
+                createdAt: new Date().toISOString()
+            };
+
+            try {
+                await addDoc(patientsCollection, newPatient);
+                patientForm.reset();
+            } catch (err) {
+                showAlert("Erro", "Erro ao salvar no banco de dados: " + err.message, "fa-triangle-exclamation", "bg-red-100 text-red-600");
+            } finally {
+                saveBtn.disabled = false;
+                saveBtn.innerHTML = '<span>Salvar Paciente</span>';
+            }
+        });
+
+        // Excluir Registro
+        window.confirmDeletePatient = function(id) {
+            patientToDeleteId = id;
+            const modal = document.getElementById('customModal');
+            document.getElementById('modalTitle').innerText = "Remover Registro";
+            document.getElementById('modalMessage').innerText = "Tem certeza que deseja remover este paciente da lista?";
+            
+            const iconContainer = document.getElementById('modalIconContainer');
+            iconContainer.className = "w-10 h-10 rounded-full bg-red-100 text-red-600 flex items-center justify-center shrink-0";
+            document.getElementById('modalIcon').className = "fa-solid fa-trash-can text-lg";
+
+            document.getElementById('modalActions').innerHTML = `
+                <button onclick="closeModal()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-4 py-2 rounded-lg text-sm font-medium transition">Cancelar</button>
+                <button onclick="executeDelete()" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition">Excluir</button>
+            `;
+            modal.classList.remove('hidden');
+        };
+
+        window.executeDelete = async function() {
+            if (!patientToDeleteId) return;
+            try {
+                await deleteDoc(doc(db, "pacientes", patientToDeleteId));
+                selectedPatientIds.delete(patientToDeleteId);
+                closeModal();
+            } catch (err) {
+                closeModal();
+                showAlert("Erro", "Erro ao excluir registro: " + err.message, "fa-triangle-exclamation", "bg-red-100 text-red-600");
+            }
+        };
+
+        // Obter Pacientes Filtrados pela Busca
+        function getFilteredPatients() {
+            const term = searchInput.value.trim().toLowerCase();
+            if (!term) return allPatients;
+            return allPatients.filter(p => 
+                (p.name && p.name.toLowerCase().includes(term)) ||
+                (p.cpf && p.cpf.includes(term)) ||
+                (p.rxType && p.rxType.toLowerCase().includes(term)) ||
+                (p.healthAgent && p.healthAgent.toLowerCase().includes(term))
+            );
+        }
+
+        // Atualizar visualização do contador
+        function updateSelectedCount() {
+            const count = selectedPatientIds.size;
+            selectedCountBadge.innerText = `${count} paciente${count === 1 ? '' : 's'} selecionado${count === 1 ? '' : 's'}`;
+            
+            const currentDisplayed = getFilteredPatients();
+            if (currentDisplayed.length > 0) {
+                const allDisplayedSelected = currentDisplayed.every(p => selectedPatientIds.has(p.id));
+                selectAllCheckbox.checked = allDisplayedSelected;
+            } else {
+                selectAllCheckbox.checked = false;
+            }
+        }
+
+        // Alternar checkbox individual
+        window.togglePatientSelection = function(id, isChecked) {
+            if (isChecked) {
+                selectedPatientIds.add(id);
+            } else {
+                selectedPatientIds.delete(id);
+            }
+            
+            // Atualizar classe na linha
+            const tr = document.getElementById(`row-${id}`);
+            if (tr) {
+                if (isChecked) {
+                    tr.classList.add('is-selected-for-print', 'bg-sky-50/70');
+                } else {
+                    tr.classList.remove('is-selected-for-print', 'bg-sky-50/70');
+                }
+            }
+            updateSelectedCount();
+        };
+
+        // Selecionar Todos
+        window.toggleSelectAll = function(masterCheckbox) {
+            const displayed = getFilteredPatients();
+            displayed.forEach(patient => {
+                if (masterCheckbox.checked) {
+                    selectedPatientIds.add(patient.id);
+                } else {
+                    selectedPatientIds.delete(patient.id);
+                }
+            });
+            renderTable(displayed);
+        };
+
+        // Renderizar Tabela
+        function renderTable(patients) {
+            patientTableBody.innerHTML = '';
+
+            if (patients.length === 0) {
+                emptyState.style.display = 'block';
+                emptyState.innerHTML = `
+                    <i class="fa-solid fa-folder-open text-3xl mb-2 text-sky-300"></i>
+                    <p class="text-sm">Nenhum paciente encontrado.</p>
+                `;
+                updateSelectedCount();
+                return;
+            }
+
+            emptyState.style.display = 'none';
+
+            patients.forEach(patient => {
+                const isChecked = selectedPatientIds.has(patient.id);
+                const tr = document.createElement('tr');
+                tr.id = `row-${patient.id}`;
+                
+                tr.className = `patient-row transition border-b border-sky-100 ${isChecked ? 'is-selected-for-print bg-sky-50/70' : 'hover:bg-sky-50/40'}`;
+
+                tr.innerHTML = `
+                    <td class="p-3 no-print text-center">
+                        <input type="checkbox" 
+                            ${isChecked ? 'checked' : ''} 
+                            onchange="togglePatientSelection('${patient.id}', this.checked)" 
+                            class="patient-checkbox w-4 h-4 rounded text-sky-600 focus:ring-sky-500 border-sky-300 cursor-pointer">
+                    </td>
+                    <td class="p-3 font-medium text-slate-800">${patient.name}</td>
+                    <td class="p-3 text-slate-600 whitespace-nowrap">${patient.cpf}</td>
+                    <td class="p-3 text-slate-600 whitespace-nowrap">${formatDate(patient.birthDate)}</td>
+                    <td class="p-3 text-slate-700">
+                        <span class="print-badge bg-sky-100 text-sky-800 border border-sky-200 px-2.5 py-0.5 rounded-full text-xs font-semibold whitespace-nowrap">
+                            ${patient.rxType}
+                        </span>
+                    </td>
+                    <td class="p-3 text-slate-600">${patient.dentalUnits}</td>
+                    <td class="p-3 text-slate-600">${patient.healthAgent}</td>
+                    <td class="p-3 no-print text-center">
+                        <button onclick="confirmDeletePatient('${patient.id}')" title="Excluir" class="text-slate-400 hover:text-red-500 p-1.5 rounded transition">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </td>
+                `;
+
+                patientTableBody.appendChild(tr);
+            });
+
+            updateSelectedCount();
+        }
+
+        // Função para acionar Impressão (Geral ou Selecionados)
+        window.printList = function(onlySelected = false) {
+            if (onlySelected) {
+                if (selectedPatientIds.size === 0) {
+                    showAlert(
+                        "Nenhum paciente selecionado", 
+                        "Por favor, marque as caixas de seleção dos pacientes que você deseja imprimir.", 
+                        "fa-circle-exclamation", 
+                        "bg-amber-100 text-amber-600"
+                    );
+                    return;
+                }
+                document.body.classList.add('print-only-selected');
+            } else {
+                document.body.classList.remove('print-only-selected');
+            }
+
+            window.print();
+
+            // Limpar classe de impressão após o fechamento da janela de impressão
+            setTimeout(() => {
+                document.body.classList.remove('print-only-selected');
+            }, 1000);
+        };
+
+        // Event listener de busca
+        searchInput.addEventListener('input', () => {
+            renderTable(getFilteredPatients());
+        });
+    </script>
+</body>
+</html>
