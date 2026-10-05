@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cadastro de Exames Radiológicos</title>
+    <title>Cadastro de Exames Radiológicos - USF Miguel Kalid</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome Tools -->
@@ -20,15 +20,10 @@
                 display: none !important;
             }
 
-            /* Ocultar elementos desnecessários */
-            .no-print {
-                display: none !important;
-            }
-
             body {
                 background: white !important;
                 color: #1e293b !important;
-                font-size: 11pt;
+                font-size: 10pt;
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
             }
@@ -77,7 +72,7 @@
                 color: #0369a1 !important;
                 font-weight: 700 !important;
                 text-transform: uppercase !important;
-                font-size: 9pt !important;
+                font-size: 8.5pt !important;
                 padding: 8px 6px !important;
                 text-align: left !important;
             }
@@ -85,7 +80,7 @@
             td {
                 padding: 8px 6px !important;
                 border-bottom: 1px solid #e2e8f0 !important;
-                font-size: 9.5pt !important;
+                font-size: 9pt !important;
                 color: #334155 !important;
             }
 
@@ -100,7 +95,7 @@
                 padding: 2px 6px !important;
                 border-radius: 4px !important;
                 font-weight: 600 !important;
-                font-size: 8.5pt !important;
+                font-size: 8pt !important;
             }
 
             /* Rodapé de Impressão */
@@ -116,14 +111,13 @@
 
     <div class="max-w-[1400px] mx-auto px-4 py-6">
         
-        <!-- Header Visual (Tela) -->
         <header class="no-print bg-white rounded-xl shadow-md p-6 mb-6 border-l-4 border-sky-500 flex flex-col md:flex-row justify-between items-center gap-4 border-t border-r border-b border-sky-100">
             <div>
                 <h1 class="text-2xl md:text-3xl font-bold text-sky-950 flex items-center gap-3">
                     <i class="fa-solid fa-tooth text-sky-500"></i>
                     Cadastro para Exames Radiológicos
                 </h1>
-                <p class="text-xs text-sky-700 mt-1">Gerenciamento de solicitações para RX - Unidade Miguel Kalid</p>
+                <p class="text-xs text-sky-700 mt-1">Gerenciamento de solicitações para RX - USF Miguel Kalid</p>
             </div>
             
             <div class="flex flex-wrap items-center gap-2">
@@ -138,7 +132,6 @@
             </div>
         </header>
 
-        <!-- Grid Principal -->
         <div class="main-grid grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
             
             <!-- Coluna Esquerda: Formulário -->
@@ -200,18 +193,17 @@
                 </form>
             </section>
 
-            <!-- Coluna Direita: Lista de Pacientes -->
             <section class="lg:col-span-8 bg-white rounded-xl shadow-md p-6 print-container border border-sky-100">
                 
-                <!-- Cabeçalho Oficial exclusivo para Impressão/PDF -->
+                <!-- Cabeçalho de Impressão -->
                 <div class="print-header">
                     <div>
                         <h1 class="text-xl font-bold text-sky-900 tracking-tight">RELATÓRIO DE SOLICITAÇÃO PARA EXAMES RX</h1>
-                        <p class="text-xs text-slate-500 mt-0.5">Sistema de Cadastramento para de Exames RX - USF MiGuel Kalid</p>
+                        <p class="text-xs text-slate-500 mt-0.5">Sistema de Cadastramento para Exames RX - USF Miguel Kalid</p>
                     </div>
                     <div class="text-right text-xs text-slate-600">
                         <p><strong>Data de Emissão:</strong> <span id="printDate"></span></p>
-                        <p><strong>Status:</strong> Documento extraOficial</p>
+                        <p><strong>Status:</strong> Documento Oficial</p>
                     </div>
                 </div>
 
@@ -233,7 +225,7 @@
                     </div>
                 </div>
 
-                <!-- Barra com botões de Ações Rápidas no topo da tabela -->
+                <!-- Barra com botões de Ações Rápidas -->
                 <div class="no-print flex flex-wrap items-center justify-between gap-2 mb-4 bg-sky-50/60 p-2.5 rounded-lg border border-sky-100 text-xs">
                     <div class="flex items-center gap-3">
                         <label class="inline-flex items-center gap-2 cursor-pointer text-sky-900 font-medium">
@@ -260,6 +252,7 @@
                                 <th class="p-3 no-print w-10 text-center">
                                     <span class="sr-only">Seleção</span>
                                 </th>
+                                <th class="p-3">Data Cad.</th>
                                 <th class="p-3">Paciente</th>
                                 <th class="p-3">CPF</th>
                                 <th class="p-3">Nascimento</th>
@@ -279,15 +272,15 @@
                     </div>
                 </div>
 
-                <!-- Rodapé Oficial exclusivo para Impressão -->
+                <!-- Rodapé de Impressão -->
                 <div class="print-footer">
                     <div class="flex justify-between items-end pt-12">
                         <div class="text-xs text-slate-500">
-                            <p>Documento gerado eletronicamente via Sistema Interno.</p>
+                            <p>Documento gerado eletronicamente via Sistema Interno USF Miguel Kalid.</p>
                         </div>
                         <div class="text-center w-64">
                             <div class="border-t border-slate-800 pt-1 text-xs font-semibold text-slate-800">
-                                Assinatura / Carimbo do Responsável (opcional)
+                                Assinatura / Carimbo do Responsável
                             </div>
                         </div>
                     </div>
@@ -298,7 +291,6 @@
         </div>
     </div>
 
-    <!-- Custom Modal Alert / Confirmation -->
     <div id="customModal" class="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center hidden no-print">
         <div class="bg-white rounded-xl shadow-xl max-w-md w-full p-6 border border-sky-100 m-4 animate-fade-in">
             <div class="flex items-center gap-3 mb-4">
@@ -314,7 +306,6 @@
         </div>
     </div>
 
-    <!-- Módulo Firebase v11 -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
         import { 
@@ -323,9 +314,7 @@
             addDoc, 
             deleteDoc, 
             doc, 
-            onSnapshot, 
-            query, 
-            orderBy 
+            onSnapshot 
         } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
         // Configuração do Firebase
@@ -340,7 +329,7 @@
             measurementId: "G-RPNLBDDENZ"
         };
 
-        // Inicialização
+        // Inicialização do Firebase
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const patientsCollection = collection(db, "pacientes");
@@ -368,9 +357,18 @@
             e.target.value = value;
         });
 
-        // Formatar Data
+        // Formatar Data ISO/YYYY-MM-DD para DD/MM/YYYY
         function formatDate(dateString) {
             if (!dateString) return '-';
+            
+            // Tratamento se a data for ISO string ou YYYY-MM-DD
+            if (dateString.includes('T')) {
+                const dateObj = new Date(dateString);
+                if (!isNaN(dateObj.getTime())) {
+                    return dateObj.toLocaleDateString('pt-BR');
+                }
+            }
+            
             const parts = dateString.split('-');
             if (parts.length === 3) {
                 return `${parts[2]}/${parts[1]}/${parts[0]}`;
@@ -399,9 +397,7 @@
             patientToDeleteId = null;
         };
 
-        // Escutar do banco Firestore em tempo real
-        const q = query(patientsCollection, orderBy("createdAt", "desc"));
-        onSnapshot(q, (snapshot) => {
+        onSnapshot(patientsCollection, (snapshot) => {
             allPatients = [];
             snapshot.forEach((docSnap) => {
                 allPatients.push({
@@ -409,6 +405,14 @@
                     ...docSnap.data()
                 });
             });
+
+            // Ordenação local por data de criação
+            allPatients.sort((a, b) => {
+                const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+                const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+                return dateB - dateA;
+            });
+
             renderTable(getFilteredPatients());
         }, (error) => {
             console.error("Erro ao escutar banco de dados:", error);
@@ -532,7 +536,6 @@
             renderTable(displayed);
         };
 
-        // Renderizar Tabela
         function renderTable(patients) {
             patientTableBody.innerHTML = '';
 
@@ -555,6 +558,8 @@
                 
                 tr.className = `patient-row transition border-b border-sky-100 ${isChecked ? 'is-selected-for-print bg-sky-50/70' : 'hover:bg-sky-50/40'}`;
 
+                const createdDateFormatted = patient.createdAt ? formatDate(patient.createdAt.split('T')[0]) : '-';
+
                 tr.innerHTML = `
                     <td class="p-3 no-print text-center">
                         <input type="checkbox" 
@@ -562,6 +567,7 @@
                             onchange="togglePatientSelection('${patient.id}', this.checked)" 
                             class="patient-checkbox w-4 h-4 rounded text-sky-600 focus:ring-sky-500 border-sky-300 cursor-pointer">
                     </td>
+                    <td class="p-3 text-slate-500 whitespace-nowrap text-xs">${createdDateFormatted}</td>
                     <td class="p-3 font-medium text-slate-800">${patient.name}</td>
                     <td class="p-3 text-slate-600 whitespace-nowrap">${patient.cpf}</td>
                     <td class="p-3 text-slate-600 whitespace-nowrap">${formatDate(patient.birthDate)}</td>
@@ -602,7 +608,7 @@
                 document.body.classList.remove('print-only-selected');
             }
 
-            // Atualiza a data de emissão no cabeçalho do PDF
+            // Atualiza a data de emissão no cabeçalho de impressão
             const printDateElem = document.getElementById('printDate');
             if (printDateElem) {
                 const now = new Date();
